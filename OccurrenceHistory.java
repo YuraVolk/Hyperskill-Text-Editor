@@ -1,12 +1,10 @@
 package editor;
 
 public class OccurrenceHistory {
-    private Pair occurrences;
-    private TextEditor editor;
+    Pair occurrences;
 
-    OccurrenceHistory(TextEditor editor) {
+    OccurrenceHistory() {
         occurrences = new Pair();
-        this.editor = editor;
     }
 
     void addElement(int start, int end) {
