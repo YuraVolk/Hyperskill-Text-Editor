@@ -12,7 +12,7 @@ public class ChooseFileCommand extends Command {
     }
 
     @Override
-    public boolean execute() {
+    public void execute() {
         int returnValue = textEditor.chooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = textEditor.chooser.getSelectedFile();
@@ -20,12 +20,10 @@ public class ChooseFileCommand extends Command {
             try {
                 String content = Files.readString(Paths.get(text.endsWith(".txt") ?
                         text : text + ".txt"));
-                System.out.println(content);
                 textEditor.textArea.setText((content.substring(0, content.length() - 2)));
             } catch (IOException e) {
                 textEditor.textArea.setText("");
             }
         }
-        return false;
     }
 }
