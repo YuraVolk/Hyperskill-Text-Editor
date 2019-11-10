@@ -12,7 +12,7 @@ public class FindOccurrencesCommand extends Command implements Runnable {
 
     @Override
     public void execute() {
-        history = new OccurrenceHistory(textEditor);
+        history = new OccurrenceHistory();
 
         String toFind = textEditor.textField.getText();
         String text = textEditor.textArea.getText();
