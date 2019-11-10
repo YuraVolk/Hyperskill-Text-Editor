@@ -34,8 +34,9 @@ public class TextEditor extends JFrame {
         getContentPane().add(scrollPane);
         scrollPane.setName("ScrollPane");
 
-        JTextArea textArea = new JTextArea();
+        textArea = new JTextArea();
         scrollPane.setViewportView(textArea);
+        textArea.setName("TextArea");
 
         JPanel panel = new JPanel();
         panel.setBounds(10, 13, 420, 24);
@@ -48,22 +49,28 @@ public class TextEditor extends JFrame {
 
         JMenu mnFile = new JMenu("File");
         menuBar.add(mnFile);
+        mnFile.setName("MenuFile");
 
         JMenuItem mntmSave = new JMenuItem("Save");
         mnFile.add(mntmSave);
+        mntmSave.setName("MenuSave");
 
         JMenuItem mntmLoad = new JMenuItem("Load");
         mnFile.add(mntmLoad);
+        mntmLoad.setName("MenuLoad");
 
         JSeparator separator = new JSeparator();
         mnFile.add(separator);
 
         JMenuItem mntmExit = new JMenuItem("Exit");
         mnFile.add(mntmExit);
-
+        mntmExit.setName("MenuExit");
 
         buttonSave.addActionListener(event -> writeToFile());
+        mntmSave.addActionListener(event -> writeToFile());
         buttonLoad.addActionListener(event -> readFile());
+        mntmLoad.addActionListener(event -> readFile());
+        mntmExit.addActionListener(event -> exit());
     }
 
     private void writeToFile() {
@@ -75,6 +82,12 @@ public class TextEditor extends JFrame {
         } catch (FileNotFoundException error) {
             System.out.println("No permission to save into this directory.");
         }
+    }
+
+    private void exit() {
+        System.gc();
+        dispose();
+        System.exit(0);
     }
 
     private void readFile() {
@@ -92,7 +105,7 @@ public class TextEditor extends JFrame {
 
     public TextEditor() {
         init();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(450, 300);
         setVisible(true);
         setLayout(null);
