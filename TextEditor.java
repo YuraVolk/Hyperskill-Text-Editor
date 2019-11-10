@@ -1,16 +1,13 @@
 package editor;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class TextEditor extends JFrame {
     JTextField textField;
     JTextArea textArea;
-    JFileChooser chooser = new JFileChooser(
-            FileSystemView.getFileSystemView().getHomeDirectory()
-    );
+    JFileChooser chooser;
     JCheckBox chckbxNewCheckBox;
     boolean isChecked = false;
     JButton buttonSave;
@@ -23,7 +20,9 @@ public class TextEditor extends JFrame {
     int currentMatch = 0;
 
     private void init() {
+        chooser = new JFileChooser();
         chooser.setName("FileChooser");
+        add(chooser);
 
         getContentPane().setLayout(null);
         JScrollPane scrollPane = new JScrollPane();
@@ -65,12 +64,11 @@ public class TextEditor extends JFrame {
 
         JMenu mnSearch = new JMenu("Search");
         menuBar.add(mnSearch);
-        mnSearch.setName("Search");
+        mnSearch.setName("MenuSearch");
 
         JMenuItem mntmStartSearch = new JMenuItem("Start Search");
         mnSearch.add(mntmStartSearch);
         mntmStartSearch.setName("MenuStartSearch");
-
 
         JMenuItem mntmPreviousSearch = new JMenuItem("Previous search");
         mnSearch.add(mntmPreviousSearch);
@@ -82,7 +80,7 @@ public class TextEditor extends JFrame {
 
         JMenuItem mntmUseRegularExpressions = new JMenuItem("Use Regular Expressions");
         mnSearch.add(mntmUseRegularExpressions);
-        mntmNextMatch.setName("MenuUseRegExp");
+        mntmUseRegularExpressions.setName("MenuUseRegExp");
 
         JSeparator separator = new JSeparator();
         separator.setBounds(81, 24, 1, 2);
@@ -233,12 +231,12 @@ public class TextEditor extends JFrame {
         buttonLoad = new JButton("");
         buttonLoad.setBounds(0, 0, 28, 28);
         panel.add(buttonLoad);
-        buttonSave.setName("LoadButton");
+        buttonLoad.setName("OpenButton");
 
         buttonSave = new JButton("");
         buttonSave.setBounds(32, 0, 28, 28);
-        panel.add(buttonSave);
         buttonSave.setName("SaveButton");
+        panel.add(buttonSave);
 
         textField = new JTextField();
         textField.setBounds(61, 4, 177, 20);
@@ -249,17 +247,17 @@ public class TextEditor extends JFrame {
         buttonSearch = new JButton("");
         buttonSearch.setBounds(303, 0, 28, 28);
         panel.add(buttonSearch);
-        buttonSave.setName("StartSearchButton");
+        buttonSearch.setName("StartSearchButton");
 
         buttonNext = new JButton("");
         buttonNext.setBounds(271, 0, 28, 28);
         panel.add(buttonNext);
-        buttonSave.setName("NextMatchButton");
+        buttonNext.setName("NextMatchButton");
 
         buttonPrev = new JButton("");
         buttonPrev.setBounds(239, 0, 28, 28);
         panel.add(buttonPrev);
-        buttonSave.setName("PreviousMatchButton");
+        buttonPrev.setName("PreviousMatchButton");
 
         chckbxNewCheckBox.addActionListener(e -> {
             if (isChecked == false) {
