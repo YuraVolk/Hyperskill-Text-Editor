@@ -23,6 +23,8 @@ public class TextEditor extends JFrame {
     int currentMatch = 0;
 
     private void init() {
+        chooser.setName("FileChooser");
+
         getContentPane().setLayout(null);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(11, 65, 423, 201);
@@ -52,7 +54,7 @@ public class TextEditor extends JFrame {
 
         JMenuItem mntmLoad = new JMenuItem("Load");
         mnFile.add(mntmLoad);
-        mntmLoad.setName("MenuLoad");
+        mntmLoad.setName("MenuOpen");
 
         JSeparator separatorMenu = new JSeparator();
         mnFile.add(separatorMenu);
@@ -63,18 +65,24 @@ public class TextEditor extends JFrame {
 
         JMenu mnSearch = new JMenu("Search");
         menuBar.add(mnSearch);
+        mnSearch.setName("Search");
 
         JMenuItem mntmStartSearch = new JMenuItem("Start Search");
         mnSearch.add(mntmStartSearch);
+        mntmStartSearch.setName("MenuStartSearch");
+
 
         JMenuItem mntmPreviousSearch = new JMenuItem("Previous search");
         mnSearch.add(mntmPreviousSearch);
+        mntmPreviousSearch.setName("MenuPreviousMatch");
 
         JMenuItem mntmNextMatch = new JMenuItem("Next Match");
         mnSearch.add(mntmNextMatch);
+        mntmNextMatch.setName("MenuNextMatch");
 
         JMenuItem mntmUseRegularExpressions = new JMenuItem("Use Regular Expressions");
         mnSearch.add(mntmUseRegularExpressions);
+        mntmNextMatch.setName("MenuUseRegExp");
 
         JSeparator separator = new JSeparator();
         separator.setBounds(81, 24, 1, 2);
@@ -220,32 +228,38 @@ public class TextEditor extends JFrame {
         chckbxNewCheckBox = new JCheckBox("Use regex");
         chckbxNewCheckBox.setBounds(335, 3, 92, 23);
         panel.add(chckbxNewCheckBox);
+        chckbxNewCheckBox.setName("UseRegExCheckbox");
 
         buttonLoad = new JButton("");
         buttonLoad.setBounds(0, 0, 28, 28);
         panel.add(buttonLoad);
+        buttonSave.setName("LoadButton");
 
         buttonSave = new JButton("");
-
         buttonSave.setBounds(32, 0, 28, 28);
         panel.add(buttonSave);
+        buttonSave.setName("SaveButton");
 
         textField = new JTextField();
         textField.setBounds(61, 4, 177, 20);
         panel.add(textField);
         textField.setColumns(10);
+        textField.setName("SearchField");
 
         buttonSearch = new JButton("");
         buttonSearch.setBounds(303, 0, 28, 28);
         panel.add(buttonSearch);
+        buttonSave.setName("StartSearchButton");
 
         buttonNext = new JButton("");
         buttonNext.setBounds(271, 0, 28, 28);
         panel.add(buttonNext);
+        buttonSave.setName("NextMatchButton");
 
         buttonPrev = new JButton("");
         buttonPrev.setBounds(239, 0, 28, 28);
         panel.add(buttonPrev);
+        buttonSave.setName("PreviousMatchButton");
 
         chckbxNewCheckBox.addActionListener(e -> {
             if (isChecked == false) {
