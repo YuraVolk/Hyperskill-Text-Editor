@@ -1,8 +1,6 @@
 package editor;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,37 +13,60 @@ public class TextEditor extends JFrame {
 
     private void init() {
         getContentPane().setLayout(null);
-
         textField = new JTextField();
-        textField.setBounds(1, 0, 268, 39);
+        textField.setBounds(10, 41, 259, 21);
         getContentPane().add(textField);
         textField.setColumns(10);
         textField.setName("FilenameField");
 
-        Button buttonSave = new Button("Save");
-        buttonSave.setBounds(354, 0, 80, 39);
+        JButton buttonSave = new JButton("Save");
+        buttonSave.setBounds(353, 41, 80, 21);
         getContentPane().add(buttonSave);
         buttonSave.setName("SaveButton");
 
-        Button buttonLoad = new Button("Load");
-        buttonLoad.setBounds(268, 0, 88, 39);
+        JButton buttonLoad = new JButton("Load");
+        buttonLoad.setBounds(267, 41, 88, 21);
         getContentPane().add(buttonLoad);
         buttonLoad.setName("LoadButton");
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(1, 50, 433, 211);
+        scrollPane.setBounds(11, 65, 423, 201);
         getContentPane().add(scrollPane);
         scrollPane.setName("ScrollPane");
 
-        textArea = new JTextArea();
+        JTextArea textArea = new JTextArea();
         scrollPane.setViewportView(textArea);
-        textArea.setName("TextArea");
 
-        buttonSave.addActionListener(this::writeToFile);
-        buttonLoad.addActionListener(this::readFile);
+        JPanel panel = new JPanel();
+        panel.setBounds(10, 13, 420, 24);
+        getContentPane().add(panel);
+        panel.setLayout(null);
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.setBounds(0, 0, 420, 24);
+        panel.add(menuBar);
+
+        JMenu mnFile = new JMenu("File");
+        menuBar.add(mnFile);
+
+        JMenuItem mntmSave = new JMenuItem("Save");
+        mnFile.add(mntmSave);
+
+        JMenuItem mntmLoad = new JMenuItem("Load");
+        mnFile.add(mntmLoad);
+
+        JSeparator separator = new JSeparator();
+        mnFile.add(separator);
+
+        JMenuItem mntmExit = new JMenuItem("Exit");
+        mnFile.add(mntmExit);
+
+
+        buttonSave.addActionListener(event -> writeToFile());
+        buttonLoad.addActionListener(event -> readFile());
     }
 
-    private void writeToFile(ActionEvent e) {
+    private void writeToFile() {
         String text = textField.getText();
         try (PrintWriter out = new PrintWriter(
                 text.endsWith(".txt") ?
@@ -56,20 +77,21 @@ public class TextEditor extends JFrame {
         }
     }
 
-    private void readFile(ActionEvent e) {
+    private void readFile() {
+        String text = textField.getText();
         try {
-            String content = Files.readString(Paths.get("file.txt"));
-            textArea.setText(content);
+            String content = Files.readString(Paths.get(text.endsWith(".txt") ?
+                                            text : text + ".txt"));
+            textArea.setText((content.substring(0, content.length() - 2)));
         } catch (IOException error) {
-            System.out.println("No such file exists.");
-            textArea.setText("No such file exists.");
+            textArea.setText("");
+            //textArea.setText("No such file exists.");
         }
 
     }
 
     public TextEditor() {
         init();
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 300);
         setVisible(true);
