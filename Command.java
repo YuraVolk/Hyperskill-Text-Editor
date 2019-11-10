@@ -7,5 +7,5 @@ public abstract class Command {
         this.textEditor = editor;
     }
 
-    public abstract boolean execute();
+    public abstract void execute();
 }
