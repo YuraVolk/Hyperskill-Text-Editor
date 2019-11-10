@@ -1,15 +1,20 @@
 package editor;
 
 import javax.swing.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 
 public class TextEditor extends JFrame {
-    private JTextField textField;
-    private JTextArea textArea;
+    JTextField textField;
+    JTextArea textArea;
+    JFileChooser chooser = new JFileChooser(
+            FileSystemView.getFileSystemView().getHomeDirectory()
+    );
+    JButton buttonSave;
+    JButton buttonLoad;
+    JButton buttonSearch;
+    JButton buttonNext;
+    JButton buttonPrev;
 
     private void init() {
         getContentPane().setLayout(null);
@@ -69,59 +74,24 @@ public class TextEditor extends JFrame {
         separator.setBounds(81, 24, 1, 2);
         getContentPane().add(separator);
 
-        JPanel panel = new JPanel();
-        panel.setBounds(11, 28, 423, 28);
-        getContentPane().add(panel);
-        panel.setLayout(null);
 
-        JButton btnA = new JButton("");
-        btnA.setIcon(null);
-
-        btnA.setBounds(0, 0, 28, 28);
-        panel.add(btnA);
-
-        JButton btnB = new JButton("");
-
-        btnB.setBounds(32, 0, 28, 28);
-        panel.add(btnB);
-
-        textField = new JTextField();
-        textField.setBounds(67, 4, 187, 20);
-        panel.add(textField);
-        textField.setColumns(10);
-
-        JButton button = new JButton("");
-        button.setBounds(258, 0, 28, 28);
-        panel.add(button);
-
-        JButton button_1 = new JButton("");
-        button_1.setBounds(294, 0, 28, 28);
-        panel.add(button_1);
-
-        JCheckBox chckbxNewCheckBox = new JCheckBox("Use regex");
-        chckbxNewCheckBox.setBounds(325, 3, 92, 23);
-        panel.add(chckbxNewCheckBox);
 
         JSeparator separator_1 = new JSeparator();
         separator_1.setBounds(59, 65, 1, 2);
         getContentPane().add(separator_1);
 
-        mntmSave.addActionListener(event -> writeToFile());
-        mntmSave.addActionListener(event -> writeToFile());
-        mntmLoad.addActionListener(event -> readFile());
-        mntmLoad.addActionListener(event -> readFile());
+        buttonLoad.addActionListener(e -> {
+            new ChooseFileCommand(this).execute();
+        });
         mntmExit.addActionListener(event -> exit());
+
     }
 
-    private void writeToFile() {
-        String text = textField.getText();
-        try (PrintWriter out = new PrintWriter(
-                text.endsWith(".txt") ?
-                        text : text + ".txt")) {
-            out.println(textArea.getText());
-        } catch (FileNotFoundException error) {
-            System.out.println("No permission to save into this directory.");
-        }
+    private ImageIcon resizeIcon(ImageIcon icon) {
+        Image img = icon.getImage() ;
+        Image newimg = img.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH);
+        icon = new ImageIcon(newimg);
+        return icon;
     }
 
     private void exit() {
@@ -130,20 +100,69 @@ public class TextEditor extends JFrame {
         System.exit(0);
     }
 
-    private void readFile() {
-        String text = textField.getText();
-        try {
-            String content = Files.readString(Paths.get(text.endsWith(".txt") ?
-                                            text : text + ".txt"));
-            textArea.setText((content.substring(0, content.length() - 2)));
-        } catch (IOException error) {
-            textArea.setText("");
-            //textArea.setText("No such file exists.");
-        }
+    private void initializeIcons() {
+        ImageIcon icon = new ImageIcon("load.png");
+        resizeIcon(icon);
+        buttonLoad.setIcon(icon);
 
+        icon = new ImageIcon("save.png");
+        resizeIcon(icon);
+        buttonSave.setIcon(icon);
+
+        icon = new ImageIcon("search.png");
+        resizeIcon(icon);
+        buttonSearch.setIcon(icon);
+
+        icon = new ImageIcon("prev.png");
+        resizeIcon(icon);
+        buttonPrev.setIcon(icon);
+
+        icon = new ImageIcon("next.png");
+        resizeIcon(icon);
+        buttonNext.setIcon(icon);
     }
 
+    private void initializePanel() {
+        JPanel panel = new JPanel();
+        panel.setBounds(11, 28, 423, 28);
+        getContentPane().add(panel);
+        panel.setLayout(null);
+
+        JCheckBox chckbxNewCheckBox = new JCheckBox("Use regex");
+        chckbxNewCheckBox.setBounds(335, 3, 92, 23);
+        panel.add(chckbxNewCheckBox);
+
+        buttonLoad = new JButton("");
+        buttonLoad.setBounds(0, 0, 28, 28);
+        panel.add(buttonLoad);
+
+        buttonSave = new JButton("");
+
+        buttonSave.setBounds(32, 0, 28, 28);
+        panel.add(buttonSave);
+
+        textField = new JTextField();
+        textField.setBounds(61, 4, 177, 20);
+        panel.add(textField);
+        textField.setColumns(10);
+
+        buttonSearch = new JButton("");
+        buttonSearch.setBounds(303, 0, 28, 28);
+        panel.add(buttonSearch);
+
+        buttonNext = new JButton("");
+        buttonNext.setBounds(271, 0, 28, 28);
+        panel.add(buttonNext);
+
+        buttonPrev = new JButton("");
+        buttonPrev.setBounds(239, 0, 28, 28);
+        panel.add(buttonPrev);
+    }
+
+
     public TextEditor() {
+        initializePanel();
+        initializeIcons();
         init();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(450, 300);
