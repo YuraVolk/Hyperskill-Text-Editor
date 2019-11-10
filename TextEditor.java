@@ -3,6 +3,8 @@ package editor;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class TextEditor extends JFrame {
     JTextField textField;
@@ -18,6 +20,7 @@ public class TextEditor extends JFrame {
     JButton buttonPrev;
 
     OccurrenceHistory occurrenceHistory;
+    int currentMatch = 0;
 
     private void init() {
         getContentPane().setLayout(null);
@@ -77,26 +80,67 @@ public class TextEditor extends JFrame {
         separator.setBounds(81, 24, 1, 2);
         getContentPane().add(separator);
 
-
-
         JSeparator separator_1 = new JSeparator();
         separator_1.setBounds(59, 65, 1, 2);
         getContentPane().add(separator_1);
 
         buttonLoad.addActionListener(e -> {
             new ChooseFileCommand(this).execute();
+            occurrenceHistory = null;
         });
+
         buttonSave.addActionListener(e -> {
             new SaveFileCommand(this).execute();
         });
+
         buttonSearch.addActionListener(e -> {
             FindOccurrencesCommand command =
                     new FindOccurrencesCommand(this);
             command.run();
             occurrenceHistory = command.getHistory();
+            currentMatch = 0;
+            textArea.requestFocus();
+            textArea.select(occurrenceHistory.occurrences.startIndexes.get(0),
+                    occurrenceHistory.occurrences.endIndexes.get(0));
         });
 
+
+        buttonNext.addActionListener(e -> {
+            if (occurrenceHistory != null) {
+                SelectMatchCommand command = new SelectMatchCommand(this);
+                command.setSearchNext(true);
+                command.execute();
+            }
+        });
+
+        buttonPrev.addActionListener(e -> {
+            if (occurrenceHistory != null) {
+                SelectMatchCommand command = new SelectMatchCommand(this);
+                command.setSearchNext(false);
+                command.execute();
+            }
+        });
+
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                occurrenceHistory = null;
+            }
+        });
+
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                occurrenceHistory = null;
+            }
+        });
         mntmExit.addActionListener(event -> exit());
+
+    }
+
+    private void keyPress(KeyEvent e) {
 
     }
 
