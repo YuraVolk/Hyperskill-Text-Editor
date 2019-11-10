@@ -2,7 +2,6 @@ package editor;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -12,6 +11,7 @@ public class TextEditor extends JFrame {
     JFileChooser chooser = new JFileChooser(
             FileSystemView.getFileSystemView().getHomeDirectory()
     );
+    JCheckBox chckbxNewCheckBox;
     boolean isChecked = false;
     JButton buttonSave;
     JButton buttonLoad;
@@ -84,6 +84,11 @@ public class TextEditor extends JFrame {
         separator_1.setBounds(59, 65, 1, 2);
         getContentPane().add(separator_1);
 
+        mntmLoad.addActionListener(e -> {
+            new ChooseFileCommand(this).execute();
+            occurrenceHistory = null;
+        });
+
         buttonLoad.addActionListener(e -> {
             new ChooseFileCommand(this).execute();
             occurrenceHistory = null;
@@ -93,7 +98,23 @@ public class TextEditor extends JFrame {
             new SaveFileCommand(this).execute();
         });
 
+        mntmSave.addActionListener(e -> {
+            new SaveFileCommand(this).execute();
+        });
+
+
         buttonSearch.addActionListener(e -> {
+            FindOccurrencesCommand command =
+                    new FindOccurrencesCommand(this);
+            command.run();
+            occurrenceHistory = command.getHistory();
+            currentMatch = 0;
+            textArea.requestFocus();
+            textArea.select(occurrenceHistory.occurrences.startIndexes.get(0),
+                    occurrenceHistory.occurrences.endIndexes.get(0));
+        });
+
+        mntmStartSearch.addActionListener(e -> {
             FindOccurrencesCommand command =
                     new FindOccurrencesCommand(this);
             command.run();
@@ -113,7 +134,23 @@ public class TextEditor extends JFrame {
             }
         });
 
+        mntmNextMatch.addActionListener(e -> {
+            if (occurrenceHistory != null) {
+                SelectMatchCommand command = new SelectMatchCommand(this);
+                command.setSearchNext(true);
+                command.execute();
+            }
+        });
+
         buttonPrev.addActionListener(e -> {
+            if (occurrenceHistory != null) {
+                SelectMatchCommand command = new SelectMatchCommand(this);
+                command.setSearchNext(false);
+                command.execute();
+            }
+        });
+
+        mntmPreviousSearch.addActionListener(e -> {
             if (occurrenceHistory != null) {
                 SelectMatchCommand command = new SelectMatchCommand(this);
                 command.setSearchNext(false);
@@ -136,19 +173,19 @@ public class TextEditor extends JFrame {
                 occurrenceHistory = null;
             }
         });
+
+        mntmUseRegularExpressions.addActionListener(e -> {
+            if (isChecked == false) {
+                chckbxNewCheckBox.setSelected(true);
+                isChecked = true;
+            } else {
+                chckbxNewCheckBox.setSelected(false);
+                isChecked = false;
+            }
+            System.out.println(isChecked);
+        });
+
         mntmExit.addActionListener(event -> exit());
-
-    }
-
-    private void keyPress(KeyEvent e) {
-
-    }
-
-    private ImageIcon resizeIcon(ImageIcon icon) {
-        Image img = icon.getImage() ;
-        Image newimg = img.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH);
-        icon = new ImageIcon(newimg);
-        return icon;
     }
 
     private void exit() {
@@ -159,23 +196,18 @@ public class TextEditor extends JFrame {
 
     private void initializeIcons() {
         ImageIcon icon = new ImageIcon("load.png");
-        resizeIcon(icon);
         buttonLoad.setIcon(icon);
 
         icon = new ImageIcon("save.png");
-        resizeIcon(icon);
         buttonSave.setIcon(icon);
 
         icon = new ImageIcon("search.png");
-        resizeIcon(icon);
         buttonSearch.setIcon(icon);
 
         icon = new ImageIcon("prev.png");
-        resizeIcon(icon);
         buttonPrev.setIcon(icon);
 
         icon = new ImageIcon("next.png");
-        resizeIcon(icon);
         buttonNext.setIcon(icon);
     }
 
@@ -185,7 +217,7 @@ public class TextEditor extends JFrame {
         getContentPane().add(panel);
         panel.setLayout(null);
 
-        JCheckBox chckbxNewCheckBox = new JCheckBox("Use regex");
+        chckbxNewCheckBox = new JCheckBox("Use regex");
         chckbxNewCheckBox.setBounds(335, 3, 92, 23);
         panel.add(chckbxNewCheckBox);
 
@@ -214,6 +246,17 @@ public class TextEditor extends JFrame {
         buttonPrev = new JButton("");
         buttonPrev.setBounds(239, 0, 28, 28);
         panel.add(buttonPrev);
+
+        chckbxNewCheckBox.addActionListener(e -> {
+            if (isChecked == false) {
+                chckbxNewCheckBox.setSelected(true);
+                isChecked = true;
+            } else {
+                chckbxNewCheckBox.setSelected(false);
+                isChecked = false;
+            }
+            System.out.println(isChecked);
+        });
     }
 
 
