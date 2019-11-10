@@ -10,11 +10,14 @@ public class TextEditor extends JFrame {
     JFileChooser chooser = new JFileChooser(
             FileSystemView.getFileSystemView().getHomeDirectory()
     );
+    boolean isChecked = false;
     JButton buttonSave;
     JButton buttonLoad;
     JButton buttonSearch;
     JButton buttonNext;
     JButton buttonPrev;
+
+    OccurrenceHistory occurrenceHistory;
 
     private void init() {
         getContentPane().setLayout(null);
@@ -83,6 +86,16 @@ public class TextEditor extends JFrame {
         buttonLoad.addActionListener(e -> {
             new ChooseFileCommand(this).execute();
         });
+        buttonSave.addActionListener(e -> {
+            new SaveFileCommand(this).execute();
+        });
+        buttonSearch.addActionListener(e -> {
+            FindOccurrencesCommand command =
+                    new FindOccurrencesCommand(this);
+            command.run();
+            occurrenceHistory = command.getHistory();
+        });
+
         mntmExit.addActionListener(event -> exit());
 
     }
@@ -165,7 +178,7 @@ public class TextEditor extends JFrame {
         initializeIcons();
         init();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(450, 300);
+        setSize(460, 315);
         setVisible(true);
         setLayout(null);
         setResizable(false);
