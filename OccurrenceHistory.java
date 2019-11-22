@@ -1,14 +1,24 @@
 package editor;
 
-public class OccurrenceHistory {
-    Pair occurrences;
+import java.util.ArrayList;
+import java.util.List;
+
+class OccurrenceHistory {
+    private List<Interval> occurrenceList;
 
     OccurrenceHistory() {
-        occurrences = new Pair();
+        occurrenceList = new ArrayList<>();
     }
 
     void addElement(int start, int end) {
-        occurrences.startIndexes.add(start);
-        occurrences.endIndexes.add(end);
+        occurrenceList.add(new Interval(start, end));
+    }
+
+    Interval getInterval(int i) {
+        return occurrenceList.get(i);
+    }
+
+    int getSize() {
+        return occurrenceList.size();
     }
 }

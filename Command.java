@@ -1,7 +1,7 @@
 package editor;
 
 public abstract class Command {
-    public TextEditor textEditor;
+    protected TextEditor textEditor;
 
     Command(TextEditor editor) {
         this.textEditor = editor;

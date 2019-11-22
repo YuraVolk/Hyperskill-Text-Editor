@@ -8,13 +8,13 @@ public class TextEditor extends JFrame {
     JTextField textField;
     JTextArea textArea;
     JFileChooser chooser;
-    JCheckBox chckbxNewCheckBox;
-    boolean isChecked = false;
-    JButton buttonSave;
-    JButton buttonLoad;
-    JButton buttonSearch;
-    JButton buttonNext;
-    JButton buttonPrev;
+    private JCheckBox chckbxNewCheckBox;
+    boolean isChecked;
+    private JButton buttonSave;
+    private JButton buttonLoad;
+    private JButton buttonSearch;
+    private JButton buttonNext;
+    private JButton buttonPrev;
 
     OccurrenceHistory occurrenceHistory;
     int currentMatch = 0;
@@ -82,11 +82,11 @@ public class TextEditor extends JFrame {
         mnSearch.add(mntmUseRegularExpressions);
         mntmUseRegularExpressions.setName("MenuUseRegExp");
 
-        JSeparator separator = new JSeparator();
+        final JSeparator separator = new JSeparator();
         separator.setBounds(81, 24, 1, 2);
         getContentPane().add(separator);
 
-        JSeparator separator_1 = new JSeparator();
+        final JSeparator separator_1 = new JSeparator();
         separator_1.setBounds(59, 65, 1, 2);
         getContentPane().add(separator_1);
 
@@ -100,13 +100,9 @@ public class TextEditor extends JFrame {
             occurrenceHistory = null;
         });
 
-        buttonSave.addActionListener(e -> {
-            new SaveFileCommand(this).execute();
-        });
+        buttonSave.addActionListener(e -> new SaveFileCommand(this).execute());
 
-        mntmSave.addActionListener(e -> {
-            new SaveFileCommand(this).execute();
-        });
+        mntmSave.addActionListener(e -> new SaveFileCommand(this).execute());
 
 
         buttonSearch.addActionListener(e -> {
@@ -115,9 +111,13 @@ public class TextEditor extends JFrame {
             command.run();
             occurrenceHistory = command.getHistory();
             currentMatch = 0;
-            textArea.requestFocus();
-            textArea.select(occurrenceHistory.occurrences.startIndexes.get(0),
-                    occurrenceHistory.occurrences.endIndexes.get(0));
+            if (occurrenceHistory.getSize() != 0) {
+                textArea.requestFocus();
+                Interval inter = occurrenceHistory.getInterval(0);
+                textArea.select(inter.getStart(),
+                        inter.getEnd());
+            }
+
         });
 
         mntmStartSearch.addActionListener(e -> {
@@ -126,9 +126,12 @@ public class TextEditor extends JFrame {
             command.run();
             occurrenceHistory = command.getHistory();
             currentMatch = 0;
-            textArea.requestFocus();
-            textArea.select(occurrenceHistory.occurrences.startIndexes.get(0),
-                    occurrenceHistory.occurrences.endIndexes.get(0));
+            if (occurrenceHistory.getSize() != 0) {
+                textArea.requestFocus();
+                Interval inter = occurrenceHistory.getInterval(0);
+                textArea.select(inter.getStart(),
+                        inter.getEnd());
+            }
         });
 
 
@@ -181,13 +184,8 @@ public class TextEditor extends JFrame {
         });
 
         mntmUseRegularExpressions.addActionListener(e -> {
-            if (isChecked == false) {
-                chckbxNewCheckBox.setSelected(true);
-                isChecked = true;
-            } else {
-                chckbxNewCheckBox.setSelected(false);
-                isChecked = false;
-            }
+            isChecked = !isChecked;
+            chckbxNewCheckBox.setSelected(isChecked);
             System.out.println(isChecked);
         });
 
@@ -195,7 +193,6 @@ public class TextEditor extends JFrame {
     }
 
     private void exit() {
-        System.gc();
         dispose();
         System.exit(0);
     }
@@ -260,13 +257,8 @@ public class TextEditor extends JFrame {
         buttonPrev.setName("PreviousMatchButton");
 
         chckbxNewCheckBox.addActionListener(e -> {
-            if (isChecked == false) {
-                chckbxNewCheckBox.setSelected(true);
-                isChecked = true;
-            } else {
-                chckbxNewCheckBox.setSelected(false);
-                isChecked = false;
-            }
+            isChecked = !isChecked;
+            chckbxNewCheckBox.setSelected(isChecked);
             System.out.println(isChecked);
         });
     }

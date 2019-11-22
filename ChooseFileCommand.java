@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class ChooseFileCommand extends Command {
     ChooseFileCommand(TextEditor editor) {
@@ -16,13 +15,13 @@ public class ChooseFileCommand extends Command {
         int returnValue = textEditor.chooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = textEditor.chooser.getSelectedFile();
-            String text = selectedFile.getAbsolutePath();
             try {
-                String content = Files.readString(Paths.get(text.endsWith(".txt") ?
-                        text : text + ".txt"));
+                String content = Files.readString(selectedFile.toPath());
                 textEditor.textArea.setText((content.substring(0, content.length() - 2)));
             } catch (IOException e) {
                 textEditor.textArea.setText("");
+                System.out.println("Error occurred: ");
+                System.out.println(e.getMessage());
             }
         }
     }

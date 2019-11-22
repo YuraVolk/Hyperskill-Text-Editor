@@ -21,7 +21,8 @@ public class SaveFileCommand extends Command {
                             path : path + ".txt")) {
                 out.println(textEditor.textArea.getText());
             } catch (FileNotFoundException error) {
-                System.out.println("No permission to save into this directory.");
+                System.out.println("Error occurred: ");
+                System.out.println(error.getMessage());
             }
         }
     }
