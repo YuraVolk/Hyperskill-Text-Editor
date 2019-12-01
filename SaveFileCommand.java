@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-public class SaveFileCommand extends Command {
+class SaveFileCommand extends Command {
     SaveFileCommand(TextEditor editor) {
         super(editor);
     }

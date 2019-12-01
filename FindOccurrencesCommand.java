@@ -4,25 +4,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FindOccurrencesCommand extends Command implements Runnable {
-    private OccurrenceHistory history;
-
     FindOccurrencesCommand(TextEditor editor) {
         super(editor);
     }
 
     @Override
     public void execute() {
-        history = new OccurrenceHistory();
-
         String toFind = textEditor.textField.getText();
         String text = textEditor.textArea.getText();
 
+        System.out.println(textEditor.currentStartIndex);
         Pattern pattern = Pattern.compile(!textEditor.isChecked ?
                 ("\\Q" + toFind + "\\E") : toFind);
         Matcher matcher = pattern.matcher(text);
 
-        while (matcher.find()) {
-            history.addElement(matcher.start(), matcher.end());
+        if (matcher.find(textEditor.currentStartIndex)) {
+            textEditor.occurrenceHistory.addElement(matcher.start(), matcher.end());
+            textEditor.currentStartIndex = matcher.end();
         }
         System.out.println("done");
     }
@@ -30,9 +28,5 @@ public class FindOccurrencesCommand extends Command implements Runnable {
     @Override
     public void run() {
         execute();
-    }
-
-    OccurrenceHistory getHistory() {
-        return history;
     }
 }

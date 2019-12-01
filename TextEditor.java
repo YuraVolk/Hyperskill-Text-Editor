@@ -5,6 +5,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class TextEditor extends JFrame {
+    private static final int PANE_WIDTH = 445;
+    private static final int TEXTAREA_WIDTH = 425;
+    private static final int PANEL_X_OFFSET = 11;
+    private static final int BAR_HEIGHT = 25;
+    private static final int PANE_Y_BOUND = 65;
+    private static final int SEPARATOR_SIZE = 2;
+    private static final int BUTTON_SIZE = 28;
+    private static final int HEIGHT_BOUND = 20;
+    private static final int END_SEPARATOR_X = 80;
+    private static final int SEPARATOR_X = 60;
+
     JTextField textField;
     JTextArea textArea;
     JFileChooser chooser;
@@ -16,8 +27,9 @@ public class TextEditor extends JFrame {
     private JButton buttonNext;
     private JButton buttonPrev;
 
-    OccurrenceHistory occurrenceHistory;
+    OccurrenceHistory occurrenceHistory = new OccurrenceHistory(this);
     int currentMatch = 0;
+    int currentStartIndex = 0;
 
     private void init() {
         chooser = new JFileChooser();
@@ -26,7 +38,7 @@ public class TextEditor extends JFrame {
 
         getContentPane().setLayout(null);
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(11, 65, 423, 201);
+        scrollPane.setBounds(PANEL_X_OFFSET, PANE_Y_BOUND, TEXTAREA_WIDTH, 201);
         getContentPane().add(scrollPane);
         scrollPane.setName("ScrollPane");
 
@@ -35,12 +47,12 @@ public class TextEditor extends JFrame {
         textArea.setName("TextArea");
 
         JPanel panelMenu = new JPanel();
-        panelMenu.setBounds(0, 0, 444, 26);
+        panelMenu.setBounds(0, 0, PANE_WIDTH, BAR_HEIGHT);
         getContentPane().add(panelMenu);
         panelMenu.setLayout(null);
 
         JMenuBar menuBar = new JMenuBar();
-        menuBar.setBounds(0, 0, 444, 24);
+        menuBar.setBounds(0, 0, PANE_WIDTH, BAR_HEIGHT);
         panelMenu.add(menuBar);
 
         JMenu mnFile = new JMenu("File");
@@ -83,21 +95,21 @@ public class TextEditor extends JFrame {
         mntmUseRegularExpressions.setName("MenuUseRegExp");
 
         final JSeparator separator = new JSeparator();
-        separator.setBounds(81, 24, 1, 2);
+        separator.setBounds(END_SEPARATOR_X, BAR_HEIGHT, SEPARATOR_SIZE, SEPARATOR_SIZE);
         getContentPane().add(separator);
 
         final JSeparator separator_1 = new JSeparator();
-        separator_1.setBounds(59, 65, 1, 2);
+        separator_1.setBounds(SEPARATOR_X, PANE_Y_BOUND, SEPARATOR_SIZE, SEPARATOR_SIZE);
         getContentPane().add(separator_1);
 
         mntmLoad.addActionListener(e -> {
             new ChooseFileCommand(this).execute();
-            occurrenceHistory = null;
+            occurrenceHistory.clear();
         });
 
         buttonLoad.addActionListener(e -> {
             new ChooseFileCommand(this).execute();
-            occurrenceHistory = null;
+            occurrenceHistory.clear();
         });
 
         buttonSave.addActionListener(e -> new SaveFileCommand(this).execute());
@@ -108,8 +120,7 @@ public class TextEditor extends JFrame {
         buttonSearch.addActionListener(e -> {
             FindOccurrencesCommand command =
                     new FindOccurrencesCommand(this);
-            command.run();
-            occurrenceHistory = command.getHistory();
+            command.execute();
             currentMatch = 0;
             if (occurrenceHistory.getSize() != 0) {
                 textArea.requestFocus();
@@ -123,8 +134,7 @@ public class TextEditor extends JFrame {
         mntmStartSearch.addActionListener(e -> {
             FindOccurrencesCommand command =
                     new FindOccurrencesCommand(this);
-            command.run();
-            occurrenceHistory = command.getHistory();
+            command.execute();
             currentMatch = 0;
             if (occurrenceHistory.getSize() != 0) {
                 textArea.requestFocus();
@@ -136,34 +146,30 @@ public class TextEditor extends JFrame {
 
 
         buttonNext.addActionListener(e -> {
-            if (occurrenceHistory != null) {
+            if (!occurrenceHistory.isEmpty()) {
                 SelectMatchCommand command = new SelectMatchCommand(this);
-                command.setSearchNext(true);
-                command.execute();
+                command.nextMatch();
             }
         });
 
         mntmNextMatch.addActionListener(e -> {
-            if (occurrenceHistory != null) {
+            if (!occurrenceHistory.isEmpty()) {
                 SelectMatchCommand command = new SelectMatchCommand(this);
-                command.setSearchNext(true);
-                command.execute();
+                command.nextMatch();
             }
         });
 
         buttonPrev.addActionListener(e -> {
-            if (occurrenceHistory != null) {
+            if (!occurrenceHistory.isEmpty()) {
                 SelectMatchCommand command = new SelectMatchCommand(this);
-                command.setSearchNext(false);
-                command.execute();
+                command.previousMatch();
             }
         });
 
         mntmPreviousSearch.addActionListener(e -> {
-            if (occurrenceHistory != null) {
+            if (!occurrenceHistory.isEmpty()) {
                 SelectMatchCommand command = new SelectMatchCommand(this);
-                command.setSearchNext(false);
-                command.execute();
+                command.previousMatch();
             }
         });
 
@@ -171,7 +177,7 @@ public class TextEditor extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                occurrenceHistory = null;
+                occurrenceHistory.clear();
             }
         });
 
@@ -179,11 +185,12 @@ public class TextEditor extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                occurrenceHistory = null;
+                occurrenceHistory.clear();
             }
         });
 
         mntmUseRegularExpressions.addActionListener(e -> {
+            occurrenceHistory.clear();
             isChecked = !isChecked;
             chckbxNewCheckBox.setSelected(isChecked);
             System.out.println(isChecked);
@@ -216,43 +223,43 @@ public class TextEditor extends JFrame {
 
     private void initializePanel() {
         JPanel panel = new JPanel();
-        panel.setBounds(11, 28, 423, 28);
+        panel.setBounds(PANEL_X_OFFSET, BUTTON_SIZE, TEXTAREA_WIDTH, BUTTON_SIZE);
         getContentPane().add(panel);
         panel.setLayout(null);
 
         chckbxNewCheckBox = new JCheckBox("Use regex");
-        chckbxNewCheckBox.setBounds(335, 3, 92, 23);
+        chckbxNewCheckBox.setBounds(335, SEPARATOR_SIZE, 92, HEIGHT_BOUND);
         panel.add(chckbxNewCheckBox);
         chckbxNewCheckBox.setName("UseRegExCheckbox");
 
         buttonLoad = new JButton("");
-        buttonLoad.setBounds(0, 0, 28, 28);
+        buttonLoad.setBounds(0, 0, BUTTON_SIZE, BUTTON_SIZE);
         panel.add(buttonLoad);
         buttonLoad.setName("OpenButton");
 
         buttonSave = new JButton("");
-        buttonSave.setBounds(32, 0, 28, 28);
+        buttonSave.setBounds(32, 0, BUTTON_SIZE, BUTTON_SIZE);
         buttonSave.setName("SaveButton");
         panel.add(buttonSave);
 
         textField = new JTextField();
-        textField.setBounds(61, 4, 177, 20);
+        textField.setBounds(SEPARATOR_X, SEPARATOR_SIZE, 177, HEIGHT_BOUND);
         panel.add(textField);
         textField.setColumns(10);
         textField.setName("SearchField");
 
         buttonSearch = new JButton("");
-        buttonSearch.setBounds(303, 0, 28, 28);
+        buttonSearch.setBounds(300, 0, BUTTON_SIZE, BUTTON_SIZE);
         panel.add(buttonSearch);
         buttonSearch.setName("StartSearchButton");
 
         buttonNext = new JButton("");
-        buttonNext.setBounds(271, 0, 28, 28);
+        buttonNext.setBounds(270, 0, BUTTON_SIZE, BUTTON_SIZE);
         panel.add(buttonNext);
         buttonNext.setName("NextMatchButton");
 
         buttonPrev = new JButton("");
-        buttonPrev.setBounds(239, 0, 28, 28);
+        buttonPrev.setBounds(240, 0, BUTTON_SIZE, BUTTON_SIZE);
         panel.add(buttonPrev);
         buttonPrev.setName("PreviousMatchButton");
 

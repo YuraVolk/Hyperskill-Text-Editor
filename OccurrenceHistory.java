@@ -6,7 +6,10 @@ import java.util.List;
 class OccurrenceHistory {
     private List<Interval> occurrenceList;
 
-    OccurrenceHistory() {
+    protected TextEditor textEditor;
+
+    OccurrenceHistory(TextEditor editor) {
+        this.textEditor = editor;
         occurrenceList = new ArrayList<>();
     }
 
@@ -20,5 +23,14 @@ class OccurrenceHistory {
 
     int getSize() {
         return occurrenceList.size();
+    }
+
+    void clear() {
+        occurrenceList.clear();
+        textEditor.currentStartIndex = 0;
+    }
+
+    boolean isEmpty() {
+        return occurrenceList.isEmpty();
     }
 }
